@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block titulo %}
+CRUD EJEM DJANGO
+{% endblock %}
+{% block contenido %}
+<head>
+	<script type="text/javascript" src="{{STATIC_URL}}js/lista_personas2.js"></script>
+</head>
+<div class="cuadro_div_tabla">
+	<fieldset><legend><h2>Cuadro consulta con JS</h2></legend></fieldset>
+	<div class="listado_tabla" id="tabla_consulta_cuadro">
+		
+	</div>
+</div>
+{% endblock %}

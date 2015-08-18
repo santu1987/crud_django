@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block titulo %}
+CRUD EJM
+{% endblock %}
+{% block contenido %}
+<div class='cuadro_div_tabla'>
+<fieldset><legend><h2>Cuadro Consulta</h2></legend></fieldset>
+<table class='table table-striped table-hover' id='tabla_consulta'>
+		<thead>
+			<th>Nombre</th>
+			<th>Cedula</th>
+			<th>Fecha</th>
+			<th>Estado</th>
+		</thead>
+	{% for elemento in lista %}
+				<tr>
+					<td>{{ elemento.id_persona.nombre }}</td>
+					<td>{{ elemento.id_persona.cedula }}</td>
+					<td>{{ elemento.id_persona.fecha  }}</td>
+					<td>{{ elemento.id_persona.id_estado.nombre_estado }}</td>
+				</tr>
+			</tbody>
+	{% endfor %}		
+	</table>
+</div>
+{% endblock %}

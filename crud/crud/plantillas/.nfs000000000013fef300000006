@@ -1,0 +1,5 @@
+{% if tipo == "registrar" %}
+	{% if respuesta == "si" %}
+			<div>La persona ha sido registrada con éxito...</div>
+{% else %}
+{% endif %}

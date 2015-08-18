@@ -1,0 +1,5 @@
+{% if tipo == "registrar" %}
+	{% if respuesta == "si" %}
+			<div></div>
+{% else %}
+{% endif %}
