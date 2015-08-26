@@ -40,8 +40,8 @@ $(document).ready(function(){
 					}
 					cabecera_tabla+="</tbody></table>";
 					$("#tabla_consulta_cuadro").html(cabecera_tabla);
-
-				}	
+					
+			}	
 	});
 //--
 });

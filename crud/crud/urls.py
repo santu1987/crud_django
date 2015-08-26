@@ -16,5 +16,6 @@ url(r'^registrar/imagen$','principal.views_persona.registrar_imagen', name = "re
 url(r'^consultar/personas$','principal.views_persona.consultar_personas',name="consultar persona"),
 url(r'^consultar/personas2$','principal.views_persona.consultar_personas2', name="consultar personas jq vista"),
 url(r'^consultar/personas_jq$','principal.views_persona.consultar_personasjq', name="conmsultar personas jq"),
-url(r'^cargar/persona$','principal.views_persona.inicio', name= "cargar persona")
+url(r'^cargar/persona$','principal.views_persona.inicio', name= "cargar persona"),
+url(r'^consultar/personas_pag$','principal.views_persona.consultar_personas_pag', name = "consultar persona pager")
 )

@@ -1,3 +1,4 @@
+#encoding:utf-8
 import json
 import os
 import sys
@@ -111,10 +112,19 @@ def cargar_persona(request):
 ######################################
 
 def consultar_personas(request):
+	caso = 'inactivo'
+	if request.method == 'POST':
+		actual = request.POST["actual"]
+		cuantos_son = request.POST["cuantos_son"]
+		cuantos_x_pagina = request.POST["cuantos_x_pagina"]
+		tipo = request.POST["tipo"]
+		caso = 'activo'		
 	cont = 0
 	cont2 = 0
 	cantipos = TiposPersonas.objects.count()
-	lista = TiposXPersonas.objects.all().distinct()
+	cantiper = Personas.objects.count()
+	#lista = TiposXPersonas.objects.all().order_by("id_persona.cedula").distinct()[0:20]
+	lista = TiposXPersonas.objects.all().annotate().order_by("id_persona")
 	tipos = []
 	for bus in lista:
 		lista_tipos = TiposXPersonas.objects.filter(id_persona=bus.id_persona.id)
@@ -128,25 +138,30 @@ def consultar_personas(request):
 		cont2+=1  	
 		tipo_str = ""
 		cont = 0
+	if caso == 'inactivo':	
+		paginador = armar_paginacion_inic(0,cantiper,20,0,cantiper) 
+	else:
+		paginador = armar_paginacion_inic(actual,cuantos_son,cuantos_x_pagina,tipo,cantiper)
 
 	cantidad = Personas.objects.all().order_by('nombre').select_related("TiposPersonas").count()
-	context = { 'lista':lista,'cantipos':cantipos, 'cantidad':cantidad, 'tipos':tipos}
+	context = { 'lista':lista,'cantipos':cantipos, 'cantidad':cantidad, 'tipos':tipos, 'paginador':paginador, 'caso':caso}
 	return render_to_response('lista_personas.html', context, context_instance=RequestContext(request))
 
 ########################################
-###			Consultar Personas JS	####
+###   Consulta con paginación        ###
 ########################################
-
-def consultar_personas2(request):
-	context = {}
-	return render_to_response('lista_personas2.html', context, context_instance=RequestContext(request))
-
 @csrf_exempt
-def consultar_personasjq(request):
+def consultar_personas_pag(request):
+	#Para armar la paginación...
+	if request.method == 'POST':
+		actual = request.POST["actual"]
+		cuantos_son = request.POST["cuantos_son"]
+		cuantos_x_pagina = request.POST["cuantos_x_pagina"]
+		tipo = request.POST["tipo"]
 
-	#lista = TiposXPersonas.objects.all().distinct()
 	lista = Personas.objects.all().order_by('cedula').annotate()
 	cuantos_tipos = Personas.objects.all().count()
+	cuantas_per = Personas.objects.count()
 	nombres = []
 	cedula = []
 	fechas = []
@@ -171,6 +186,142 @@ def consultar_personasjq(request):
 		estado.append(bus.id_estado.nombre_estado)
 		tipos.append(tipo_str)
 		tipo_str = ""
-		#--
-	variable = {'cedula':cedula,'nombres':nombres,'fechas':fechas, 'estado':estado, 'tipos':tipos, 'cuantos_tipos':cuantos_tipos};	
+	paginador = armar_paginacion_inic(actual,cuantos_son,cuantos_x_pagina,tipo,cuantas_per)
+	#--
+	variable = {'cedula':cedula,'nombres':nombres,'fechas':fechas, 'estado':estado, 'tipos':tipos, 'cuantos_tipos':cuantos_tipos, 'paginador': paginador};	
 	return HttpResponse(json.dumps(variable), content_type = 'application/json;charset=utf8')
+	
+########################################
+###			Consultar Personas JS	####
+########################################
+
+def consultar_personas2(request):
+	context = {}
+	return render_to_response('lista_personas2.html', context, context_instance=RequestContext(request))
+
+@csrf_exempt
+def consultar_personasjq(request):
+
+	#lista = TiposXPersonas.objects.all().distinct()
+	lista = Personas.objects.all().order_by('cedula').annotate()
+	cuantos_tipos = Personas.objects.all().count()
+	cuantas_per = Personas.objects.count()
+	nombres = []
+	cedula = []
+	fechas = []
+	estado = []
+	tipos = []
+	cont2 = 0
+	for bus in lista:
+		lista_tipos =  TiposXPersonas.objects.filter(id_persona=bus.id)
+		#-- Creando las listas de tipos
+		for bus2 in lista_tipos:
+			cont2+=1
+			if cont2 == 1:
+				tipo_str = bus2.id_tipo.nombre_tipo
+			else:
+				tipo_str = tipo_str+","+bus2.id_tipo.nombre_tipo
+				cont2 = 0	
+		#--Creando las listas de personas
+		fecha = bus.fecha
+		nombres.append(bus.nombre)
+		cedula.append(bus.cedula)
+		fechas.append(fecha.isoformat())
+		estado.append(bus.id_estado.nombre_estado)
+		tipos.append(tipo_str)
+		tipo_str = ""
+		paginador = armar_paginacion_inic(0,cuantas_per,20,0,cuantas_per) 
+		#--
+	variable = {'cedula':cedula,'nombres':nombres,'fechas':fechas, 'estado':estado, 'tipos':tipos, 'cuantos_tipos':cuantos_tipos, 'paginador': paginador};	
+	return HttpResponse(json.dumps(variable), content_type = 'application/json;charset=utf8')
+
+########################################
+###Para armar paginacion de consulta####
+########################################
+
+def armar_paginacion_inic(actual1, cuantos_son1, cuantos_x_pagina1, tipos, cuantos_bd1):
+	offset = 0
+	dicc_tabla = ''
+	#---------------------------------
+	actual = int(actual1)
+	cuantos_son = int(cuantos_son1)
+	cuantos_x_pagina =  int(cuantos_x_pagina1)
+	cuantos_bd = int(cuantos_bd1)
+	tipo = str(tipos)
+	#---------------------------------
+	if cuantos_son == 0  or tipo == 3:
+		cuantos_son_tabla = cuantos_bd
+	else:
+		cuantos_son_tabla = cuantos_son
+	#Calculo a que página debe ir
+	if tipo == '0':
+		offset = 0;
+		#calculo los limites
+		dicc_tabla = calculo_limites(offset,cuantos_son_tabla,1)
+
+	if tipo == '1':
+		offset = actual + cuantos_x_pagina
+		#calculo de limites
+		dicc_tabla = calculo_limites(offset,cuantos_son_tabla,1)
+
+	if tipo == '2':
+		offset = actual - cuantos_x_pagina
+		#calculo de limites
+		dicc_tabla = calculo_limites(offset,cuantos_son_tabla,2)
+
+	if tipo == '3':
+		offset = int(actual)
+		if actual == cuantos_son_tabla:
+			offset = 0
+			dicc_tabla = calculo_limites(offset,cuantos_son_tabla,1)	
+
+	#para ocultar siguiente
+	offset_sig = offset + cuantos_x_pagina
+	clase_sig = ""
+	if offset_sig == cuantos_son_tabla or offset_sig > cuantos_son_tabla:
+		clase_sig = "disabled"		
+
+	#para ocultar anterior
+	if offset == 0:
+		clase_ant = "disabled"
+	else:
+		clase_ant = ""
+	#
+	if cuantos_son_tabla > 0:
+		clase_tabla = 'show'
+		clase_tickets = 'hide'
+	else:
+		clase_tabla = 'hide'
+		clase_tickets = 'show'
+	###
+	###-Ordenando las variables
+	vect_tabla = dicc_tabla.split("-")
+	###	
+	diccionario = {
+						'clase_paginador_siguiente' : clase_sig,
+						'clase_paginador_anterior' : clase_ant,
+						'offset_tabla' : offset,
+						'cuantos_tabla': cuantos_son_tabla,
+						'inicio_tabla' : vect_tabla[0],
+						'fin_tabla': vect_tabla[1],
+						'clase_tabla': clase_tabla,
+						'clase_tickets': clase_tabla,
+						'tipo':offset
+	}
+
+	return diccionario
+
+def calculo_limites(offset,cuantos_son,tipo):
+	inicio_tabla = offset+1
+	valor = offset+20;
+
+	if valor >= cuantos_son:
+		fin_tabla = cuantos_son
+	else:
+		fin_tabla = valor
+
+	if cuantos_son == 0:
+		inicio_tabla = 0
+
+	dicc_tabla = str(inicio_tabla)+"-"+str(fin_tabla)
+	return dicc_tabla
