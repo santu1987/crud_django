@@ -10,6 +10,8 @@ from  django.views.decorators.csrf  import  csrf_exempt
 from django.shortcuts import render_to_response, RequestContext, get_object_or_404, render 
 from principal.models import Personas,Estados,TiposPersonas,TiposXPersonas
 from principal.forms import PersonaForm
+from django.db.models import Max
+
 
 ######################################
 ###         Inicio                 ### 
@@ -123,8 +125,10 @@ def consultar_personas(request):
 	cont2 = 0
 	cantipos = TiposPersonas.objects.count()
 	cantiper = Personas.objects.count()
+	lista = TiposXPersonas.objects.all().select_related().distinct()
 	#lista = TiposXPersonas.objects.all().order_by("id_persona.cedula").distinct()[0:20]
-	lista = TiposXPersonas.objects.all().annotate().order_by("id_persona")
+	#lista = TiposXPersonas.objects.all().annotate(count("id_persona.cedula"),distinct=true).order_by("id_persona")
+	
 	tipos = []
 	for bus in lista:
 		lista_tipos = TiposXPersonas.objects.filter(id_persona=bus.id_persona.id)
