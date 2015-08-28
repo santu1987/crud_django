@@ -6,10 +6,22 @@ CRUD EJEM DJANGO
 <head>
 	<script type="text/javascript" src="{{STATIC_URL}}js/lista_personas2.js"></script>
 </head>
+<form name="formulario" id="formulario" class="form-horizontal" enctype="multipart/form-data">
 <div class="cuadro_div_tabla">
-	<fieldset><legend><h2>Cuadro consulta con JS</h2></legend></fieldset>
+	<fieldset><legend><h2>Cuadro consulta con JS</h2></legend></fieldset>{% csrf_token %}
+	<div class='form-group'>
+		<div class='col-lg-4'>
+			<input type='text' id='filtro_name' name='filtro_name' placeholder='Ingrese nombre' onchange="consultar_filtro();" class='form-control' onkeypress="return valida(event,this,16,60);"  onblur="valida2(event,this,16,60);">
+		</div>	
+		<div class='col-lg-4'>
+			<input type='text' id='filtro_ci' name='filtro_ci' placeholder='Ingrese C&eacute;dula' onchange="consultar_filtro();" class='form-control' onkeypress="return valida(event,this,10,11);" onblur="valida2(event,this,10,11);">
+		</div>
+	</div> 
 	<div class="listado_tabla" id="tabla_consulta_cuadro">
 		
 	</div>
+	<div role="toolbar" id="pager" name="pager">
+	</div>	
 </div>
+</form>
 {% endblock %}

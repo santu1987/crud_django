@@ -10,7 +10,6 @@ from  django.views.decorators.csrf  import  csrf_exempt
 from django.shortcuts import render_to_response, RequestContext, get_object_or_404, render 
 from principal.models import Personas,Estados,TiposPersonas,TiposXPersonas
 from principal.forms import PersonaForm
-from django.db.models import Max
 
 
 ######################################
@@ -207,9 +206,46 @@ def consultar_personas2(request):
 def consultar_personasjq(request):
 
 	#lista = TiposXPersonas.objects.all().distinct()
-	lista = Personas.objects.all().order_by('cedula').annotate()
-	cuantos_tipos = Personas.objects.all().count()
+	#Para armar la paginación...
+	caso = 'no'
+	actual = 0
+	where = ''
+	if request.method == 'POST':
+		#--Var paginación:
+		actual = request.POST["actual"]
+		cuantos_son = request.POST["cuantos_son"]
+		cuantos_x_pagina = request.POST["cuantos_x_pagina"]
+		tipo = request.POST["tipo"]
+		#--Var Filtros:
+		filtro_name = request.POST["filtro_name"]
+		filtro_ci = request.POST["filtro_ci"]
+		caso = 'si'
+	else:
+		filtro_name = ''
+		filtro_ci = ''	
+	###
 	cuantas_per = Personas.objects.count()
+	cuantos_tipos = Personas.objects.all().count()
+	###
+	if caso == 'no':
+		paginador = armar_paginacion_inic(0,cuantas_per,20,0,cuantas_per) 
+	else:
+		paginador = armar_paginacion_inic(actual,cuantos_son,cuantos_x_pagina,tipo,cuantas_per)
+	#lista = Personas.objects.all().order_by('cedula').annotate()
+	#--
+	#Para filtar:
+	if filtro_name !="" or filtro_ci!="":
+		if filtro_name !="" and filtro_ci!="":
+			lista = Personas.objects.filter(nombre=filtro_name,cedula=filtro_ci).order_by('cedula')[paginador["offset_tabla"]:]
+		else:
+			if filtro_name != "":
+		   	    lista = Personas.objects.filter(nombre=filtro_name).order_by('cedula')[paginador["offset_tabla"]:]
+			elif filtro_ci != "":
+				lista = Personas.objects.filter(cedula=filtro_ci).order_by('cedula')[paginador["offset_tabla"]:]
+	else:
+		lista = Personas.objects.all().order_by('cedula')[paginador["offset_tabla"]:]
+	#cuantos_tipos = Personas.objects.all().count()
+	#cuantas_per = Personas.objects.count()
 	nombres = []
 	cedula = []
 	fechas = []
@@ -234,7 +270,10 @@ def consultar_personasjq(request):
 		estado.append(bus.id_estado.nombre_estado)
 		tipos.append(tipo_str)
 		tipo_str = ""
-		paginador = armar_paginacion_inic(0,cuantas_per,20,0,cuantas_per) 
+		#if caso == 'no':
+		#	paginador = armar_paginacion_inic(0,cuantas_per,20,0,cuantas_per) 
+		#else:
+		#	paginador = armar_paginacion_inic(actual,cuantos_son,cuantos_x_pagina,tipo,cuantas_per)
 		#--
 	variable = {'cedula':cedula,'nombres':nombres,'fechas':fechas, 'estado':estado, 'tipos':tipos, 'cuantos_tipos':cuantos_tipos, 'paginador': paginador};	
 	return HttpResponse(json.dumps(variable), content_type = 'application/json;charset=utf8')

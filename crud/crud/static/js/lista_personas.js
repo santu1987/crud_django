@@ -38,8 +38,7 @@ function ir_tabla(actual,cuantos_son,cuantos_x_pagina,tipo){
 											<tbody>";
 				var arr = new Array();
 				//alert(html["fechas"][1]);
-				//alert(html["cuantos_tipos"])
-				for(i=0;i<html["cuantos_tipos"];i++)
+				for(i=0;i<html["paginador"]["cuantos_tabla"];i++)
 				{
 					cabecera_tabla+="<tr>\
 										<td>"+i+"</td>\
