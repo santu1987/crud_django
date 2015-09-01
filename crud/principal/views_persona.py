@@ -107,6 +107,29 @@ def cargar_persona(request):
 	context = {'formulario':formulario,'lista_tipos':lista_tipos,'cantipos':cantipos}
 	return render_to_response('personas.html',context, context_instance=RequestContext(request))
 
+######################################
+###       Actualizar Personas      ###
+######################################
+@csrf_exempt
+def modificar_persona(request):
+	if request.method == 'POST':
+		nombre_us = request.POST["nombre_us"]
+		cedula_us = request.POST["cedula_us"]
+		fecha = request.POST["fecha"]
+		estado_usuario = request.POST["estado_usuario"]
+		valor = actualizar_persona(nombre_us,cedula_us,fecha,estado_usuario)
+	return HttpResponse(json.dumps(str(valor)), content_type = 'application/json;charset=utf8')
+
+def actualizar_persona(nombre_us,cedula_us,fecha,estado_usuario):
+	recordset = Personas.objects.filter(cedula=cedula_us)
+	if recordset.exists():
+		Personas.objects.filter(cedula=cedula_us).update(nombre=nombre_us,cedula=cedula_us,fecha=fecha,id_estado=estado_usuario)
+		variable = 1
+	else:
+		variable = 2
+	return variable		
+	passdef
+
 
 ######################################
 ###      Consultar Personas        ###
@@ -251,6 +274,8 @@ def consultar_personasjq(request):
 	fechas = []
 	estado = []
 	tipos = []
+	id_estado = []
+	id_tipo = []
 	cont2 = 0
 	for bus in lista:
 		lista_tipos =  TiposXPersonas.objects.filter(id_persona=bus.id)
@@ -259,8 +284,10 @@ def consultar_personasjq(request):
 			cont2+=1
 			if cont2 == 1:
 				tipo_str = bus2.id_tipo.nombre_tipo
+				str_id_tipo = str(bus2.id_tipo.id)
 			else:
 				tipo_str = tipo_str+","+bus2.id_tipo.nombre_tipo
+				str_id_tipo = str_id_tipo+","+str(bus2.id_tipo.id)
 				cont2 = 0	
 		#--Creando las listas de personas
 		fecha = bus.fecha
@@ -269,13 +296,15 @@ def consultar_personasjq(request):
 		fechas.append(fecha.isoformat())
 		estado.append(bus.id_estado.nombre_estado)
 		tipos.append(tipo_str)
+		id_estado.append(bus.id_estado.id)
+		id_tipo.append(str_id_tipo)
 		tipo_str = ""
 		#if caso == 'no':
 		#	paginador = armar_paginacion_inic(0,cuantas_per,20,0,cuantas_per) 
 		#else:
 		#	paginador = armar_paginacion_inic(actual,cuantos_son,cuantos_x_pagina,tipo,cuantas_per)
 		#--
-	variable = {'cedula':cedula,'nombres':nombres,'fechas':fechas, 'estado':estado, 'tipos':tipos, 'cuantos_tipos':cuantos_tipos, 'paginador': paginador};	
+	variable = {'cedula':cedula,'nombres':nombres,'fechas':fechas, 'estado':estado, 'tipos':tipos, 'cuantos_tipos':cuantos_tipos, 'paginador': paginador, 'id_estado': id_estado, 'id_tipo':id_tipo	};	
 	return HttpResponse(json.dumps(variable), content_type = 'application/json;charset=utf8')
 
 ########################################

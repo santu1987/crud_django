@@ -559,4 +559,11 @@ function mensaje_validacion(campo, mensaje)
   },2000);
   $(campo).show();
 }
+//Para cerrar modals
+function cerrar_mensaje(){
+  setTimeout(function()
+  {
+     $("#cerrar_mensaje").click();
+  },2000);
+}
 //--

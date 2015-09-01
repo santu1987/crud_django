@@ -17,5 +17,7 @@ url(r'^consultar/personas$','principal.views_persona.consultar_personas',name="c
 url(r'^consultar/personas2$','principal.views_persona.consultar_personas2', name="consultar personas jq vista"),
 url(r'^consultar/personas_jq$','principal.views_persona.consultar_personasjq', name="conmsultar personas jq"),
 url(r'^cargar/persona$','principal.views_persona.inicio', name= "cargar persona"),
-url(r'^consultar/personas_pag$','principal.views_persona.consultar_personas_pag', name = "consultar persona pager")
+url(r'^consultar/personas_pag$','principal.views_persona.consultar_personas_pag', name = "consultar persona pager"),
+url(r'^consultar/estados$','principal.views_estado.consultar_estados', name = "consultar estados"),
+url(r'^modificar/personas$','principal.views_persona.modificar_persona', name = "modificar persona")
 )

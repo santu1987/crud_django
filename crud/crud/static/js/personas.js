@@ -62,25 +62,28 @@ $(document).ready(function(){
     	no_results_text: "No hemos encontrado resultados!",
 		allow_single_deselect: true
 	});
+
 	if($("#id_estado_usuario").val()){
 	   	$('#id_estado_usuario').prepend(new Option('SELECCIONE...', '0', true, true));	
 			$('#id_estado_usuario').trigger("chosen:updated");			
 	}
-$("#id_fecha_usuario").datetimepicker({ 
-    lang:'es',
-    minDate:0,
-    timepicker:false,
-    format:'d-m-Y',
-    formatDate:'Y-m-d',
-});
+
+	$("#id_fecha_usuario").datetimepicker({ 
+	    lang:'es',
+	    minDate:0,
+	    timepicker:true,
+	    format:'d-m-Y',
+	    formatDate:'Y-m-d',
+	});
 //--	
 });
 //--Bloque de funciones
-function cambiar_formato_fecha(fecha)
-{
+
+function cambiar_formato_fecha(fecha){
 	var fecha2 = fecha.substring(6,10)+"-"+fecha.substring(3,5)+"-"+fecha.substring(0,2);
 	return fecha2;
 }
+
 function cargar_imagen(){
 	var formulario = new FormData($("#formulario")[0]);
 	$.ajax({

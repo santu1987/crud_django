@@ -21,7 +21,24 @@ CRUD EJEM DJANGO
 		
 	</div>
 	<div role="toolbar" id="pager" name="pager">
-	</div>	
+	</div>
 </div>
 </form>
+<div class="modal fade" id="modal_mensaje" name="modal_mensaje" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+ 	<div class="modal-dialog" id="ventana_desc">
+   		<div class="modal-content">
+      		<div class="modal-header">
+        		<button type="button" id="cerrar_mensaje" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        		<p id="cabecera_mensaje" name="cabecera_mensaje"></p>
+      		</div>
+      		<div class="modal-body" id="cuerpo_mensaje" name="cuerpo_mensaje">
+      		</div>
+      		<div class="modal-footer">
+        		<button type="button" id="aceptar_mensaje" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
+        		<button type="button" name="cancelar_mensaje" id="cancelar_mensaje" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+        		<button type="button" name="actualizar_usuario" id="actualizar_usuario" class="btn btn-success">Guardar</button>
+      		</div>
+  		</div>
+	</div>
+</div>
 {% endblock %}

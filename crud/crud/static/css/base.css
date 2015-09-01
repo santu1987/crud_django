@@ -44,6 +44,11 @@ footer
   margin-left: 25%;
   margin-top: 0.5%;
 }
+#respuesta2
+{
+  display: block;
+  width: 50%;
+}
 .ocupacion
 {
   padding:5%;

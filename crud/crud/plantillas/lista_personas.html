@@ -8,7 +8,7 @@ CRUD EJM
 	{% endblock %}
 <div class='cuadro_div_tabla'>
 <form name ="formulario" id='formulario' class='form-horizontal' enctype="multipart/form-data">
-	<fieldset><legend><h2>Cuadro Consulta</h2></legend></fieldset>{% csrf_token %}
+	<fieldset><legend><h2>Cuadro Consulta tradicional </h2></legend></fieldset>{% csrf_token %}
 	<div class="listado_tabla" id="tabla_consulta_cuadro">
 		<table class='table table-striped table-hover' id='tabla_consulta'>
 				<thead>
@@ -21,7 +21,7 @@ CRUD EJM
 				<tbody>	
 				{% for elemento in lista %}
 							<tr>
-								<td>{{ elemento.id_persona.id }}</td>
+								<td>{{ elemento.id_persona.id_persona }}</td>
 								<td>{{ elemento.id_persona.nombre }}</td>
 								<td>{{ elemento.id_persona.cedula }}</td>
 								<td>{{ elemento.id_persona.fecha  }}</td>
