@@ -164,6 +164,7 @@ function cargar_modal(i){
 									</div>\
 									<div>\
 										<input type='hidden' name='id_persona' id='id_persona' value='"+arreglo_datos[9]+"'>\
+									</div>\
 									<div id='respuesta2'></div>\
 								</form>\
 							</div>";
