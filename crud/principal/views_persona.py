@@ -45,7 +45,7 @@ def insertar_persona(nombre_us,cedula_us,estado_usuario,fecha_usuario,cantipos,r
 	    else:
 	    	salvar_info = Personas(cedula = cedula_us, nombre = nombre_us, id_estado=estadou,fecha=fecha_usuario)
 	    	salvar_info.save()
-	    	for i in range(1,int(cantipos)): 
+	    	for i in range(0,int(cantipos)): 
 	    		if 'tipo'+str(i) in request.POST:	
 	    			id_tipo = request.POST['tipo'+str(i)]
 	    			if(id_tipo != ''):
@@ -117,13 +117,28 @@ def modificar_persona(request):
 		cedula_us = request.POST["cedula_us"]
 		fecha = request.POST["fecha"]
 		estado_usuario = request.POST["estado_usuario"]
-		valor = actualizar_persona(nombre_us,cedula_us,fecha,estado_usuario)
+		id_persona = request.POST["id_persona"]
+		cuantos_tipos = request.POST["cuantos_tipos"]
+		valor = actualizar_persona(nombre_us,cedula_us,fecha,estado_usuario,id_persona,cuantos_tipos,request)
 	return HttpResponse(json.dumps(str(valor)), content_type = 'application/json;charset=utf8')
 
-def actualizar_persona(nombre_us,cedula_us,fecha,estado_usuario):
+def actualizar_persona(nombre_us,cedula_us,fecha,estado_usuario,id_persona,cuantos_tipos,request):
 	recordset = Personas.objects.filter(cedula=cedula_us)
 	if recordset.exists():
 		Personas.objects.filter(cedula=cedula_us).update(nombre=nombre_us,cedula=cedula_us,fecha=fecha,id_estado=estado_usuario)
+		####Para modificar tabla de TiposXPersonas
+		#1-Elimino los registros
+		TiposXPersonas.objects.filter(id_persona=id_persona).delete()
+		#2-Realizo de nuevo la inserción
+		for i in range(0,int(cuantos_tipos)): 
+	    		if 'tipo'+str(i) in request.POST:	
+	    			id_tipo = request.POST['tipo'+str(i)]
+	    			if(id_tipo != ''):
+	    				persona = Personas.objects.get(cedula=cedula_us)
+	    				tipo = TiposPersonas.objects.get(id=id_tipo)
+	    				personas_x_tipo = TiposXPersonas(id_persona=persona,id_tipo=tipo)
+	    				personas_x_tipo.save()
+		####
 		variable = 1
 	else:
 		variable = 2
@@ -232,6 +247,8 @@ def consultar_personasjq(request):
 	#Para armar la paginación...
 	caso = 'no'
 	actual = 0
+	tipo_str = ""
+	str_id_tipo = ""
 	where = ''
 	if request.method == 'POST':
 		#--Var paginación:
@@ -276,20 +293,30 @@ def consultar_personasjq(request):
 	tipos = []
 	id_estado = []
 	id_tipo = []
+	todos_tipos = []
+	todos_id_tipos = []
+	id_persona = []
 	cont2 = 0
+	#--Para recorrer todos los tipos de personas
+	t_tipos = TiposPersonas.objects.all()
+	for bus_tp in t_tipos:
+		todos_tipos.append(bus_tp.nombre_tipo)
+		todos_id_tipos.append(bus_tp.id)
+	#--
 	for bus in lista:
 		lista_tipos =  TiposXPersonas.objects.filter(id_persona=bus.id)
 		#-- Creando las listas de tipos
 		for bus2 in lista_tipos:
-			cont2+=1
+			cont2=cont2+1
 			if cont2 == 1:
 				tipo_str = bus2.id_tipo.nombre_tipo
 				str_id_tipo = str(bus2.id_tipo.id)
 			else:
 				tipo_str = tipo_str+","+bus2.id_tipo.nombre_tipo
 				str_id_tipo = str_id_tipo+","+str(bus2.id_tipo.id)
-				cont2 = 0	
+		cont2 = 0	
 		#--Creando las listas de personas
+
 		fecha = bus.fecha
 		nombres.append(bus.nombre)
 		cedula.append(bus.cedula)
@@ -298,13 +325,13 @@ def consultar_personasjq(request):
 		tipos.append(tipo_str)
 		id_estado.append(bus.id_estado.id)
 		id_tipo.append(str_id_tipo)
-		tipo_str = ""
+		id_persona.append(bus.id)
 		#if caso == 'no':
 		#	paginador = armar_paginacion_inic(0,cuantas_per,20,0,cuantas_per) 
 		#else:
 		#	paginador = armar_paginacion_inic(actual,cuantos_son,cuantos_x_pagina,tipo,cuantas_per)
 		#--
-	variable = {'cedula':cedula,'nombres':nombres,'fechas':fechas, 'estado':estado, 'tipos':tipos, 'cuantos_tipos':cuantos_tipos, 'paginador': paginador, 'id_estado': id_estado, 'id_tipo':id_tipo	};	
+	variable = {'cedula':cedula,'nombres':nombres,'fechas':fechas, 'estado':estado, 'tipos':tipos, 'cuantos_tipos':cuantos_tipos, 'paginador': paginador, 'id_estado': id_estado, 'id_tipo':id_tipo, 'todos_tipos':todos_tipos, 'todos_id_tipos':todos_id_tipos, 'id_persona' : id_persona	};	
 	return HttpResponse(json.dumps(variable), content_type = 'application/json;charset=utf8')
 
 ########################################

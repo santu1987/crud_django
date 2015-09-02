@@ -12,21 +12,21 @@ CRUD EJM
 	<div class="listado_tabla" id="tabla_consulta_cuadro">
 		<table class='table table-striped table-hover' id='tabla_consulta'>
 				<thead>
-					<th>Id</th>
-					<th>Nombre</th>
-					<th>Cedula</th>
-					<th>Fecha</th>
-					<th>Estado</th>
+					<th data-campo:'id'>Id</th>
+					<th data-campo:'nombre'>Nombre</th>
+					<th data-campo:'cedula'>Cedula</th>
+					<th data-campo:'fecha'>Fecha</th>
+					<th data-campo:'estado'>Estado</th>
 				</thead>
 				<tbody>	
 				{% for elemento in lista %}
-							<tr>
-								<td>{{ elemento.id_persona.id_persona }}</td>
-								<td>{{ elemento.id_persona.nombre }}</td>
-								<td>{{ elemento.id_persona.cedula }}</td>
-								<td>{{ elemento.id_persona.fecha  }}</td>
-								<td>{{ elemento.id_persona.id_estado.nombre_estado }}</td>
-							</tr>
+					<tr>
+						<td data-campo:'id' class='id'>{{ elemento.id_persona.id_persona }}</td>
+						<td data-campo:'nombre' class='nombre'>{{ elemento.id_persona.nombre }}</td>
+						<td data-campo:'cedula' class='cedula'>{{ elemento.id_persona.cedula }}</td>
+						<td data-campo:'fecha' class='fecha'>{{ elemento.id_persona.fecha  }}</td>
+						<td data-campo:'estado' class='estado'>{{ elemento.id_persona.id_estado.nombre_estado }}</td>
+					</tr>
 				{% endfor %}
 				</tbody>		
 		</table>

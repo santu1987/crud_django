@@ -72,12 +72,12 @@ function ir_tabla(actual,cuantos_son,cuantos_x_pagina,tipo){
 				success:function(html){
 					var cabecera_tabla="<table class='table table-striped table-hover' id='tabla_consulta'>\
 											<thead>\
-												<th>N#</th>\
-												<th>Nombres</th>\
-												<th>Cédula</th>\
-												<th>Fecha</th>\
-												<th>Estado</th>\
-												<th>Profesion</th>\
+												<th  class='id'>N#</th>\
+												<th  class='nombre'>Nombres</th>\
+												<th  class='cedula' >Cédula</th>\
+												<th  class='fecha' >Fecha</th>\
+												<th  class='estado' >Estado</th>\
+												<th  class='profesion'>Profesion</th>\
 											</thead>\
 											<tbody>";
 					var arr = new Array();
@@ -86,13 +86,13 @@ function ir_tabla(actual,cuantos_son,cuantos_x_pagina,tipo){
 					{
 						if(html["nombres"][i])
 						{
-							cabecera_tabla+="<tr id='us"+i+"' onclick='cargar_modal("+i+");' data='"+html["nombres"][i]+"*"+html["cedula"][i]+"*"+html["fechas"][i]+"*"+html["estado"][i]+"*"+html["tipos"][i]+"*"+html["id_estado"][i]+"*"+html["id_tipo"][i]+"'>\
-											<td>"+i+"</td>\
-											<td>"+html["nombres"][i]+"</td>\
-											<td>"+html["cedula"][i]+"</td>\
-											<td>"+html["fechas"][i]+"</td>\
-											<td>"+html["estado"][i]+"</td>\
-											<td>"+html["tipos"][i]+"</td>\
+							cabecera_tabla+="<tr id='us"+i+"' onclick='cargar_modal("+i+");' data='"+html["nombres"][i]+"*"+html["cedula"][i]+"*"+html["fechas"][i]+"*"+html["estado"][i]+"*"+html["tipos"][i]+"*"+html["id_estado"][i]+"*"+html["id_tipo"][i]+"*"+html["todos_id_tipos"]+"*"+html["todos_tipos"]+"*"+html["id_persona"][i]+"'>\
+											<td  class='id'>"+i+"</td>\
+											<td  class='nombre'>"+html["nombres"][i]+"</td>\
+											<td  class='cedula'>"+html["cedula"][i]+"</td>\
+											<td  class='fecha'>"+html["fechas"][i]+"</td>\
+											<td  class='estado'>"+html["estado"][i]+"</td>\
+											<td  class='profesion'>"+html["tipos"][i]+"</td>\
 										</tr>";	
 						}							
 					}
@@ -116,6 +116,24 @@ function cargar_modal(i){
 	if($("#us"+i).on("click")){
 		var data = $("#us"+i).attr("data");
 		var arreglo_datos = data.split("*");
+		//--------------------------------------------------------------------------------------------------------------------------
+		var op_str = "";
+		var arreglo_tipos_nombre = arreglo_datos[8].split(",");
+		var arreglo_tipos_id = arreglo_datos[7].split(",");
+		for (i=0;i<arreglo_tipos_id.length;i++){ 
+			op_str+= "<div class='col-lg-12'>\
+						<input class='check_oc' name='tipo"+i+"' id='tipo"+i+"' type='checkbox' value='"+arreglo_tipos_id[i]+"' >\
+						<label for='tipo"+i+"'>\
+							<span>\
+								<div class='ef_text1' style='margin:5px 0 0 30px'>"+arreglo_tipos_nombre[i]+"</div>\
+							</span>\
+						</label>\
+					  </div>";
+		}
+		op_str+="<div>\
+					<input type='hidden' size='2' name='cuantos_tipos' id='cuantos_tipos' value='"+arreglo_tipos_id.length+"'>\
+				</div>";
+		//---------------------------------------------------------------------------------------------------------------------------
 		//--Armando el modal
 		var cuerpo_mensaje ="<div class='contenido_modal'>\
 								<form id='form_act_us' name='form_act_us' class='form-horizontal'>\
@@ -139,16 +157,29 @@ function cargar_modal(i){
 										<div class='col-lg-12'>\
 										</div>\
 									</div>\
+									<div>\
+										<h4>Profesi&oacute;n/Ocupaci&oacute;n</h4>\
+									</div>\
+									<div id='cuerpo_option'>\
+									</div>\
+									<div>\
+										<input type='hidden' name='id_persona' id='id_persona' value='"+arreglo_datos[9]+"'>\
 									<div id='respuesta2'></div>\
 								</form>\
 							</div>";
 		mensajes(cuerpo_mensaje);
 		$("#cabecera_mensaje").html("<h3 class='modal-title' id='myModalLabel' name='myModalLabel'>Actualizar datos de usuarios</h3>");
+		$("#cuerpo_option").html(op_str);
 		//--Configurando el modal
 		$("#aceptar_mensaje").css({"display":"none"});
 		//-------------------------
-		//cargar_estados();			
-		//alert(arreglo_datos[5]);
+		var tipos_marcados = arreglo_datos[6].split(",");
+		for(i=0;i<tipos_marcados.length;i++){
+			if(arreglo_datos[6]!=""){
+				x=tipos_marcados[i]-1;
+				document.getElementById("tipo"+x).checked='checked';	
+			}			
+		}
 		cargar_estados(arreglo_datos[5]);
 		$("#estado_usuario").val(arreglo_datos[5]);
 		$('#estado_usuario').prepend(new Option('SELECCIONE...', '0', true, true));	

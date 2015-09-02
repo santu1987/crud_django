@@ -57,14 +57,58 @@ footer
 {
   display: none;
 }
+#cuerpo_mensaje
+{
+  height: 450px;
+}
+
+tbody 
+{
+  display: block;
+  height: 40vh;
+  min-height: 200px;
+  overflow-Y: scroll;
+}
+
+tr 
+{
+  display: block;
+  overflow: hidden;
+}
+
+th,td
+{
+  width:80vh;
+}
 
 input[type="checkbox"]:checked + label {
   background: url(../images/checked.png) no-repeat;
 }
+
 input[type="checkbox"] + label {
   display: inline-block;
   width: 24px;
   height: 24px;
   background: url(../images/unchecked.png) no-repeat;
   cursor: pointer;
+}
+.id
+{
+  width:10%;
+}
+.nombre
+{
+  width:25%;
+}
+.cedula
+{
+  width:10%;
+}
+.fecha
+{
+  width:10%;
+}
+.estado
+{
+  width:10%;
 }
